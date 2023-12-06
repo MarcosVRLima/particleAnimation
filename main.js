@@ -85,17 +85,17 @@ const controls = new OrbitControls( camera, renderer.domElement );
 //controls.update() must be called after any manual changes to the camera's transform
 camera.position.set( 0, 0, 5);
 controls.update();
-
+let time = 0
 // Animation loop
 const animate = () => {
     requestAnimationFrame(animate);
+    time += 0.01;
 
     // Atualize as posições das partículas para criar uma animação
     vetorDeParticulas.forEach(particles => {
         particles.children.forEach(particle => {
-            particle.position.x += (Math.random() - 0.5) * 0.01;
-            particle.position.y += (Math.random() - 0.5) * 0.01;
-            particle.position.z += (Math.random() - 0.5) * 0.01;
+            particle.position.x += time;
+            particle.position.y += time;
         });
     });
 
