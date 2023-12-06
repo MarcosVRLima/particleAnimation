@@ -16,6 +16,44 @@
   <body>
     <script src="https://threejs.org/build/three.js"></script>
     <script>
+      function getRandomColor() {
+        const randomColor = Math.floor(Math.random()*16777215).toString(16);
+        return "#" + "0".repeat(6 - randomColor.length) + randomColor;
+      }
+    const POS = [
+      [200, -6, -5.5, -2, 2, -5.5, -5],
+      [40, -5.5, -4, 1.5, 2, -5.5, -5],
+      [40, -4.5, -4, 0, 2, -5.5, -5],
+      [40, -5.5, -4, 0, 0.5, -5.5, -5],
+
+      [200, -6 + 3, -5.5 + 3, -2, 2, -5.5, -5],
+      [40, -5.5 + 3, -4 + 3, 1.5, 2, -5.5, -5],
+      [40, -4.5 + 3, -4 + 3, 0, 2, -5.5, -5],
+      [40, -5.5 + 3, -4 + 3, 0, 0.5, -5.5, -5],
+
+      [200, -6 + 6, -5.5 + 6, -2, 2, -5.5, -5],
+      [50, -5.5 + 6, -4 + 6, 1.5, 2, -5.5, -5],
+      [50, -4.5 + 6, -4 + 6, 1, 2, -5.5, -5],
+      [50, -5.5 + 6, -4 + 6, -2, -1.5, -5.5, -5],
+      [50, -4.5 + 6, -4 + 6, -1.5, 0, -5.5, -5],
+      [50, -5 + 6, -4 + 6, -0.5, 0, -5.5, -5],
+
+      [200, -6 + 9, -5.5 + 9, -2, 2, -5.5, -5],
+      [50, -5.5 + 9, -4 + 9, 1.5, 2, -5.5, -5],
+      [50, -5.5 + 9, -4 + 9, -0.25, 0.25, -5.5, -5],
+      [50, -5.5 + 9, -4 + 9, -2, -1.5, -5.5, -5],
+
+      [200, -6 + 12, -5.5 + 12, -2, 2, -5.5, -5],
+      [50, -5.5 + 12, -4 + 12, 1.5, 2, -5.5, -5],
+      [50, -5.5 + 12, -4 + 12, -0.25, 0.25, -5.5, -5],
+      [50, -5.5 + 12, -4 + 12, -2, -1.5, -5.5, -5],
+      [200, -6 + 15, -5.5 + 15, -2, 2, -5.5, -5],
+      [50, -5.5 + 15, -4 + 15, 1.5, 2, -5.5, -5],
+      [50, -5.5 + 15, -4 + 15, -2, -1.5, -5.5, -5],
+      [50, -4.5 + 15, -4 + 15, 1, 2, -5.5, -5],
+      [50, -4.5 + 15, -4 + 15, -2, -1, -5.5, -5],
+    ]
+
     const createParticles = (
         num_particles,
         min_x,
@@ -30,7 +68,11 @@
         for (let i = 0; i < num_particles; i++) {
           const particle = new THREE.Mesh(
             new THREE.SphereGeometry(0.1, 8, 8),
-            new THREE.MeshBasicMaterial({ color: 0xffffff })
+            new THREE.MeshStandardMaterial(new THREE.MeshStandardMaterial({
+              color: getRandomColor(),
+              metalness: 0.2, // Fully metallic
+              roughness: 0, // Adjust as needed
+            }))
           );
 
           // Set random positions within the specified range
@@ -42,7 +84,33 @@
         }
 
         scene.add(particles);
+        return particles;
       };
+      
+      const animateParticles = (particles) => {
+        let i = 0;
+        let max_movement = 0.03;
+        particles.forEach((group) => {
+          group.children.forEach((particle) => {
+            // Move particles randomly within the specified range
+            particle.position.x += Math.random() * max_movement * 2 - max_movement;
+            particle.position.y += Math.random() * max_movement * 2 - max_movement;
+            particle.position.z += Math.random() * max_movement * 2 - max_movement;
+            let x_min = POS[i][1];
+            let x_max = POS[i][2];
+            let y_min = POS[i][3];
+            let y_max = POS[i][4];
+            let z_min = POS[i][5];
+            let z_max = POS[i][6];
+
+            particle.position.x = Math.max(x_min, Math.min(x_max, particle.position.x));
+            particle.position.y = Math.max(y_min, Math.min(y_max, particle.position.y));
+            particle.position.z = Math.max(z_min, Math.min(z_max, particle.position.z));
+          });
+          i++;
+        });
+        }
+      
       // Set up the scene, camera, and renderer
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
@@ -57,15 +125,12 @@
 
       // Set up the camera position
       camera.position.z = 5;
+      camera.position.y = -2;
       camera.position.x = 2.5;
 
-      // Animation loop
-      const animate = () => {
-        requestAnimationFrame(animate);
-
-        // Render the scene
-        renderer.render(scene, camera);
-      };
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(0, 0, 1).normalize();
+      scene.add(directionalLight);
 
       // Handle window resize
       window.addEventListener("resize", () => {
@@ -78,44 +143,25 @@
         renderer.setSize(newWidth, newHeight);
       });
 
-      // draw first P
-      createParticles(100, -6, -5.5, -2, 2, -5, -5.5);
-      createParticles(40, -5.5, -4, 2, 1.5, -5, -5.5);
-      createParticles(40, -4, -4.5, 2, 0, -5, -5.5);
-      createParticles(40, -5.5, -4, 0, 0.5, -5, -5.5);
+      all_particles = [];
+      POS.forEach((pos) => {
+        all_particles.push(createParticles(pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6]));
+      })
 
-      // draw second P
-      createParticles(100, -6 + 3, -5.5 + 3, -2, 2, -5, -5.5);
-      createParticles(40, -5.5 + 3, -4 + 3, 2, 1.5, -5, -5.5);
-      createParticles(40, -4 + 3, -4.5 + 3, 2, 0, -5, -5.5);
-      createParticles(40, -5.5 + 3, -4 + 3, 0, 0.5, -5, -5.5);
+      const textureLoader = new THREE.TextureLoader();
+      const texture = textureLoader.load('./background.jpg'); // Replace with the path to your texture
+      scene.background = texture;
 
-      // draw G
-      createParticles(100, -6 + 6, -5.5 + 6, -2, 2, -5, -5.5);
-      createParticles(40, -5.5 + 6, -4 + 6, 2, 1.5, -5, -5.5);
-      createParticles(20, -4 + 6, -4.5 + 6, 2, 1, -5, -5.5);
-      createParticles(40, -5.5 + 6, -4 + 6, -2, -1.5, -5, -5.5);
-      createParticles(40, -4 + 6, -4.5 + 6, 0, -1.5, -5, -5.5);
-      createParticles(20, -5 + 6, -4 + 6, 0, -0.5, -5, -5.5);
+      // Animation loop
+      const animate = () => {
+        requestAnimationFrame(animate);
 
-      // draw first E
-      createParticles(100, -6 + 9, -5.5 + 9, -2, 2, -5, -5.5);
-      createParticles(40, -5.5 + 9, -4 + 9, 2, 1.5, -5, -5.5);
-      createParticles(40, -5.5 + 9, -4 + 9, 0.25, -0.25, -5, -5.5);
-      createParticles(40, -5.5 + 9, -4 + 9, -2, -1.5, -5, -5.5);
-
-      // draw second E
-      createParticles(100, -6 + 12, -5.5 + 12, -2, 2, -5, -5.5);
-      createParticles(40, -5.5 + 12, -4 + 12, 2, 1.5, -5, -5.5);
-      createParticles(40, -5.5 + 12, -4 + 12, 0.25, -0.25, -5, -5.5);
-      createParticles(40, -5.5 + 12, -4 + 12, -2, -1.5, -5, -5.5);
-
-      // draw C
-      createParticles(100, -6 + 15, -5.5 + 15, -2, 2, -5, -5.5);
-      createParticles(40, -5.5 + 15, -4 + 15, 2, 1.5, -5, -5.5);
-      createParticles(40, -5.5 + 15, -4 + 15, -2, -1.5, -5, -5.5);
-      createParticles(20, -4 + 15, -4.5 + 15, 2, 1, -5, -5.5);
-      createParticles(20, -4 + 15, -4.5 + 15, -2, -1, -5, -5.5);
+        animateParticles(all_particles);
+        camera.rotation.x = 0.2 * Math.sin(Date.now() * 5e-4) + 0.1;
+        camera.position.z = 5 * Math.sin(Date.now() * 1e-3) + 10;
+        // Render the scene
+        renderer.render(scene, camera);
+      };
 
       // Start the animation
       animate();
