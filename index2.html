@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Particle Wave Animation</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://threejs.org/build/three.js"></script>
+    <script>
+    const createParticles = (
+        num_particles,
+        min_x,
+        max_x,
+        min_y,
+        max_y,
+        min_z,
+        max_z
+      ) => {
+        const particles = new THREE.Group();
+
+        for (let i = 0; i < num_particles; i++) {
+          const particle = new THREE.Mesh(
+            new THREE.SphereGeometry(0.1, 8, 8),
+            new THREE.MeshBasicMaterial({ color: 0xffffff })
+          );
+
+          // Set random positions within the specified range
+          particle.position.x = Math.random() * (max_x - min_x) + min_x;
+          particle.position.y = Math.random() * (max_y - min_y) + min_y;
+          particle.position.z = Math.random() * (max_z - min_z) + min_z;
+
+          particles.add(particle);
+        }
+
+        scene.add(particles);
+      };
+      // Set up the scene, camera, and renderer
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Set up the camera position
+      camera.position.z = 5;
+      camera.position.x = 2.5;
+
+      // Animation loop
+      const animate = () => {
+        requestAnimationFrame(animate);
+
+        // Render the scene
+        renderer.render(scene, camera);
+      };
+
+      // Handle window resize
+      window.addEventListener("resize", () => {
+        const newWidth = window.innerWidth;
+        const newHeight = window.innerHeight;
+
+        camera.aspect = newWidth / newHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(newWidth, newHeight);
+      });
+
+      // draw first P
+      createParticles(100, -6, -5.5, -2, 2, -5, -5.5);
+      createParticles(40, -5.5, -4, 2, 1.5, -5, -5.5);
+      createParticles(40, -4, -4.5, 2, 0, -5, -5.5);
+      createParticles(40, -5.5, -4, 0, 0.5, -5, -5.5);
+
+      // draw second P
+      createParticles(100, -6 + 3, -5.5 + 3, -2, 2, -5, -5.5);
+      createParticles(40, -5.5 + 3, -4 + 3, 2, 1.5, -5, -5.5);
+      createParticles(40, -4 + 3, -4.5 + 3, 2, 0, -5, -5.5);
+      createParticles(40, -5.5 + 3, -4 + 3, 0, 0.5, -5, -5.5);
+
+      // draw G
+      createParticles(100, -6 + 6, -5.5 + 6, -2, 2, -5, -5.5);
+      createParticles(40, -5.5 + 6, -4 + 6, 2, 1.5, -5, -5.5);
+      createParticles(20, -4 + 6, -4.5 + 6, 2, 1, -5, -5.5);
+      createParticles(40, -5.5 + 6, -4 + 6, -2, -1.5, -5, -5.5);
+      createParticles(40, -4 + 6, -4.5 + 6, 0, -1.5, -5, -5.5);
+      createParticles(20, -5 + 6, -4 + 6, 0, -0.5, -5, -5.5);
+
+      // draw first E
+      createParticles(100, -6 + 9, -5.5 + 9, -2, 2, -5, -5.5);
+      createParticles(40, -5.5 + 9, -4 + 9, 2, 1.5, -5, -5.5);
+      createParticles(40, -5.5 + 9, -4 + 9, 0.25, -0.25, -5, -5.5);
+      createParticles(40, -5.5 + 9, -4 + 9, -2, -1.5, -5, -5.5);
+
+      // draw second E
+      createParticles(100, -6 + 12, -5.5 + 12, -2, 2, -5, -5.5);
+      createParticles(40, -5.5 + 12, -4 + 12, 2, 1.5, -5, -5.5);
+      createParticles(40, -5.5 + 12, -4 + 12, 0.25, -0.25, -5, -5.5);
+      createParticles(40, -5.5 + 12, -4 + 12, -2, -1.5, -5, -5.5);
+
+      // draw C
+      createParticles(100, -6 + 15, -5.5 + 15, -2, 2, -5, -5.5);
+      createParticles(40, -5.5 + 15, -4 + 15, 2, 1.5, -5, -5.5);
+      createParticles(40, -5.5 + 15, -4 + 15, -2, -1.5, -5, -5.5);
+      createParticles(20, -4 + 15, -4.5 + 15, 2, 1, -5, -5.5);
+      createParticles(20, -4 + 15, -4.5 + 15, -2, -1, -5, -5.5);
+
+      // Start the animation
+      animate();
+    </script>
+  </body>
+</html>
